@@ -229,7 +229,7 @@ class BaseNerTagger:
     A utility class for NER Tagging.
     """
 
-    def __init__(self, unlabelled, labelled=None, data_directory=''):
+    def __init__(self, unlabelled, labelled=None, data_directory='', model_path=None):
         """
         Initialize with a list of unlabelled strings and/or list of tagged tuples.
         :param unlabelled: list of strings
@@ -257,9 +257,14 @@ class BaseNerTagger:
             })
 
         self.model = None
+        if model_path is not None :
+            self.load_model(model_path)
 
         self.data_directory = os.path.join(data_directory, 'NER_Data')
         os.makedirs(self.data_directory, exist_ok=True)
+
+    def load_model(path) :
+        return pickle.load(open(path, 'rb'))
 
     def get_unlabelled_indices(self):
         return [index for index, ex in enumerate(self.dataset) if ex['status'] == 'UNLABELLED']
@@ -571,6 +576,7 @@ class NerTagger:
                  dataset,
                  unique_tags,
                  data_directory='',
+                 model_path=None,
                  multiuser=False
                  ):
         """
@@ -587,7 +593,7 @@ class NerTagger:
         :param unique_tags:
         """
         self.unique_tags = unique_tags
-        self.ntagger = BaseNerTagger(dataset, data_directory=data_directory)
+        self.ntagger = BaseNerTagger(dataset, data_directory=data_directory, model_path=model_path)
         self.app = get_app(self.ntagger, self.unique_tags)
         self.utmapping = {t[0]: t[1] for t in self.unique_tags}
 
