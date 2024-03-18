@@ -237,10 +237,11 @@ class BaseNerTagger:
         """
         if unlabelled is None:
             unlabelled = []
-        # else:
-        #     unlabelled = [
-        #         {'raw': get_pos_tagged_example(text)} for text in unlabelled
-        #     ]
+        elif isinstance(unlabelled[0], str) :
+            unlabelled = [
+                {'raw': get_pos_tagged_example(text)} for text in unlabelled
+            ]
+
         if labelled is None:
             labelled = []
 
@@ -575,8 +576,8 @@ def get_pos_tagged_example(text):
 class NerTagger:
     def __init__(self,
                  unlabelled,
-                 labelled,
                  unique_tags,
+                 labelled=None,
                  data_directory='',
                  model_path=None,
                  multiuser=False
