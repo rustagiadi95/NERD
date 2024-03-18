@@ -237,9 +237,10 @@ class BaseNerTagger:
         """
         if unlabelled is None:
             unlabelled = []
-        else:
-            unlabelled = [
-                {'raw': get_pos_tagged_example(text)} for text in unlabelled]
+        # else:
+        #     unlabelled = [
+        #         {'raw': get_pos_tagged_example(text)} for text in unlabelled
+        #     ]
         if labelled is None:
             labelled = []
 
@@ -263,7 +264,7 @@ class BaseNerTagger:
         self.data_directory = os.path.join(data_directory, 'NER_Data')
         os.makedirs(self.data_directory, exist_ok=True)
 
-    def load_model(path) :
+    def load_model(self, path) :
         return pickle.load(open(path, 'rb'))
 
     def get_unlabelled_indices(self):
@@ -383,7 +384,7 @@ class BaseNerTagger:
             filepath = os.path.join(
                 self.data_directory, 'ner_tagged_data.pickle')
         with open(filepath, 'wb') as out:
-            pickle.dump(self.labelled, out)
+            pickle.dump(self.dataset, out)
 
     def load_data(self, filepath=None):
         """
@@ -573,7 +574,8 @@ def get_pos_tagged_example(text):
 
 class NerTagger:
     def __init__(self,
-                 dataset,
+                 unlabelled,
+                 labelled,
                  unique_tags,
                  data_directory='',
                  model_path=None,
@@ -593,7 +595,12 @@ class NerTagger:
         :param unique_tags:
         """
         self.unique_tags = unique_tags
-        self.ntagger = BaseNerTagger(dataset, data_directory=data_directory, model_path=model_path)
+        self.ntagger = BaseNerTagger(
+            unlabelled=unlabelled, 
+            labelled=labelled, 
+            data_directory=data_directory, 
+            model_path=model_path
+        )
         self.app = get_app(self.ntagger, self.unique_tags)
         self.utmapping = {t[0]: t[1] for t in self.unique_tags}
 
